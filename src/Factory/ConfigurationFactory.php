@@ -60,7 +60,7 @@ class ConfigurationFactory
                 $nullable = $reflectionType->allowsNull();
 
                 if (!$nullable && !isset($array[$propertyName])) {
-                    throw new \RuntimeException("Missing mandatory field $propertyName");
+                    throw new \RuntimeException("Missing mandatory field $propertyName for {$reflection->getName()}");
                 }
 
                 if (!isset($array[$propertyName])) {
@@ -80,7 +80,10 @@ class ConfigurationFactory
                         throw new \RuntimeException("Configuration not specified for field $propertyName");
                     }
 
-                    $this->fromArray($fieldValue, $arguments['configuration']);
+                    $configurableInstance = $arguments['configuration'];
+                    $this->fromArray($fieldValue, $configurableInstance);
+
+                    $fieldValue = $configurableInstance;
                 }
 
                 $property->setAccessible(true);
