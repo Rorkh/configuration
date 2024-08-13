@@ -91,6 +91,10 @@ class ConfigurationFactory
             }
         }
 
+        if (method_exists($instance, '__fill')) {
+            call_user_func_array([$instance, '__fill'], []);
+        }
+
         return $instance;
     }
 }
