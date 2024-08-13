@@ -15,6 +15,6 @@
         }
     ],
     "require": {
-        "symfony/validator": "^7.1"
+        "php": ">=8.1"
     }
 }
