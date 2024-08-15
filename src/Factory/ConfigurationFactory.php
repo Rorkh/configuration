@@ -68,7 +68,12 @@ class ConfigurationFactory
                 if (!isset($array[$propertyName]) && $property->hasDefaultValue()) {
                     $fieldValue = $property->getDefaultValue();
                 } else {
-                    $fieldValue = $isPrefilled ? $instance->$propertyName : $array[$propertyName];
+                    $fieldValue = $isPrefilled ? $instance->$propertyName : ($array[$propertyName] ?? null);
+                }
+
+                $attributeInstance = $attribute->newInstance();
+                if (method_exists($attributeInstance, '__fill')) {
+                    $fieldValue = call_user_func_array([$attributeInstance, '__fill'], [$this, $fieldValue]);
                 }
 
                 if (!isset($fieldValue)) {
@@ -79,11 +84,6 @@ class ConfigurationFactory
                     && $reflectionType->getName() !== gettype($fieldValue)
                 ) {
                     throw new \RuntimeException("$propertyName field value type not matches declared type");
-                }
-
-                $attributeInstance = $attribute->newInstance();
-                if (method_exists($attributeInstance, '__fill')) {
-                    $fieldValue = call_user_func_array([$attributeInstance, '__fill'], [$this, $fieldValue]);
                 }
 
                 $property->setAccessible(true);
