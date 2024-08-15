@@ -19,7 +19,7 @@ class ConfigurableField extends Field
      */
     public function __fill(ConfigurationFactory $factory, mixed $fieldValue): ConfigurationInterface
     {
-        $instance = $factory->fromArray($fieldValue, $this->configuration);
+        $instance = $factory->fromArray($fieldValue ?? [], $this->configuration);
         return $instance;
     }
 
