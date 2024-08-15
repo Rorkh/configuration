@@ -33,6 +33,10 @@ class ConfigurationFactory
             $instance = $configurationClass;
         }
 
+        if (method_exists($instance, '__fill')) {
+            call_user_func_array([$instance, '__fill'], []);
+        }
+
         $reflection = new \ReflectionClass($configurationClass);
 
         $configurationArguments = [];
@@ -59,14 +63,16 @@ class ConfigurationFactory
                 $reflectionType = $property->getType();
                 $nullable = $reflectionType->allowsNull();
 
-                if (!$nullable && !isset($array[$propertyName])) {
-                    throw new \RuntimeException("Missing mandatory field $propertyName for {$reflection->getName()}");
-                }
+                $isPrefilled = isset($instance->$propertyName) && !$property->hasDefaultValue();
 
-                if (!isset($array[$propertyName])) {
+                if (!isset($array[$propertyName]) && $property->hasDefaultValue()) {
                     $fieldValue = $property->getDefaultValue();
                 } else {
-                    $fieldValue = $array[$propertyName];
+                    $fieldValue = $isPrefilled ? $instance->$propertyName : $array[$propertyName];
+                }
+
+                if (!isset($fieldValue)) {
+                    throw new \RuntimeException("Missing mandatory field $propertyName for {$reflection->getName()}");
                 }
 
                 if (isset($configurationArguments['strict']) && $configurationArguments['strict']
@@ -83,10 +89,6 @@ class ConfigurationFactory
                 $property->setAccessible(true);
                 $property->setValue($instance, $fieldValue);
             }
-        }
-
-        if (method_exists($instance, '__fill')) {
-            call_user_func_array([$instance, '__fill'], []);
         }
 
         return $instance;
