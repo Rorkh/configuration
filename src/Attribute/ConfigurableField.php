@@ -27,8 +27,8 @@ class ConfigurableField extends Field
      * @param string|null $name Field name
      * @param ConfigurationInterface $configuration;
      */
-    public function __construct(private readonly ?string $name = null,
-        private readonly ConfigurationInterface $configuration)
+    public function __construct(private readonly ConfigurationInterface $configuration,
+        private readonly ?string $name = null)
     {
         parent::__construct($name);
     }
