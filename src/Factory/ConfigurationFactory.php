@@ -75,15 +75,9 @@ class ConfigurationFactory
                     throw new \RuntimeException("$propertyName field value type not matches declared type");
                 }
 
-                if ($attribute->getName() == ConfigurableField::class) {
-                    if (!isset($arguments['configuration'])) {
-                        throw new \RuntimeException("Configuration not specified for field $propertyName");
-                    }
-
-                    $configurableInstance = $arguments['configuration'];
-                    $this->fromArray($fieldValue, $configurableInstance);
-
-                    $fieldValue = $configurableInstance;
+                $attributeInstance = $attribute->newInstance();
+                if (method_exists($attributeInstance, '__fill')) {
+                    $fieldValue = call_user_func_array([$attributeInstance, '__fill'], [$this, $fieldValue]);
                 }
 
                 $property->setAccessible(true);

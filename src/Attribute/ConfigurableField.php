@@ -2,6 +2,7 @@
 
 namespace Zeantar\Configuration\Attribute;
 
+use Zeantar\Configuration\Factory\ConfigurationFactory;
 use Zeantar\Configuration\Interface\ConfigurationInterface;
 
 /**
@@ -10,6 +11,18 @@ use Zeantar\Configuration\Interface\ConfigurationInterface;
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
 class ConfigurableField extends Field
 {
+    /**
+     * @param ConfigurationFactory $factory
+     * @param mixed $fieldValue
+     * 
+     * @return ConfigurationInterface
+     */
+    public function __fill(ConfigurationFactory $factory, mixed $fieldValue): ConfigurationInterface
+    {
+        $instance = $factory->fromArray($fieldValue, $this->configuration);
+        return $instance;
+    }
+
     /**
      * @param string|null $name Field name
      * @param ConfigurationInterface $configuration;
